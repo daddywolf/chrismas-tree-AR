@@ -20,10 +20,20 @@ It utilizes **Google MediaPipe** for real-time AI computer vision to track both 
 *   **Memory Gallery**: Double-sided "Polaroid" style photos hanging on the tree.
 *   **Gesture Interaction**:
     *   **Disperse/Assemble**: Explode the tree into snow or gather it back.
-    *   **Smart Zoom**: Pinch to grab a photo; it flies to the top-center of your screen for reading.
+    *   **Smart Zoom**: Pinch to grab a photo; it flies to the **center** of your screen for reading.
 *   **Head-Tracking Parallax**: Move your head to look around the tree (Holographic effect).
 *   **Customizable**: Adjust colors, particle count, and speed via a holographic UI.
 *   **Cinematic Effects**: Post-processing includes Bloom (glow), Noise, and Vignette.
+
+### 🖼️ How to Add Your Own Photos (Local Deployment Only)
+*Note: In the online preview environment, random sample photos are used. To use your own photos, please clone the project and run it locally.*
+
+1.  **Create a Folder**: Create a folder named `photos` in the root directory of the project (next to `index.tsx` and `package.json`).
+2.  **Add Images**: Place your image files (`.jpg`, `.png`, `.webp`, or `.gif`) into this folder.
+    *   *Example path: `./photos/my-memory.jpg`*
+3.  **Uncomment Code**: Open `components/Decorations.tsx` and uncomment the `import.meta.glob` lines at the top of the file.
+4.  **Restart**: If the development server is running, Vite should automatically detect the new files.
+5.  **Enjoy**: The tree will automatically generate a Polaroid for each photo you added.
 
 ### 🛠 Tech Stack
 *   **Framework**: [React 18](https://react.dev/)
@@ -43,7 +53,7 @@ Ensure your hand is visible to the camera.
 *   **✊ Closed Fist**: **Assemble**. The particles gather to form the tree shape.
 *   **👌 Pinch (Thumb & Index)**: **Select & Zoom**.
     *   Hover your cursor over a hanging photo.
-    *   Pinch and hold to bring the photo to the **top center** of your screen.
+    *   Pinch and hold to bring the photo to the **center** of your screen.
     *   Release to let it fly back to the tree.
 *   **✋ Hovering**: Merely holding your hand up will **pause the tree's automatic rotation**, allowing you to look at details closely.
 
@@ -98,10 +108,20 @@ Ensure your hand is visible to the camera.
 *   **记忆画廊**：树上悬挂着双面渲染的“拍立得”风格照片。
 *   **手势交互**：
     *   **聚散控制**：张开手掌打散圣诞树，握拳将其聚合。
-    *   **智能放大**：手指捏合即可抓取照片，照片会自动飞至屏幕**正上方居中**位置方便查看。
+    *   **智能放大**：手指捏合即可抓取照片，照片会自动飞至屏幕**正中央**位置方便查看。
 *   **头部视差**：随着您的头部移动，圣诞树会产生视差位移（全息效果）。
 *   **高度定制**：通过全息控制面板调节树的颜色、粒子数量和动画速度。
 *   **电影级特效**：包含辉光 (Bloom)、噪点 (Noise) 和暗角 (Vignette) 后期处理。
+
+### 🖼️ 如何添加您自己的照片 (仅限本地运行)
+*注意：在线预览环境中，系统将使用随机图片。如需加载本地图片，请在本地环境运行。*
+
+1.  **创建文件夹**: 在项目根目录（即 `index.tsx` 和 `package.json` 所在的同级目录）创建一个名为 `photos` 的文件夹。
+2.  **添加图片**: 将您的图片文件（支持 `.jpg`, `.png`, `.webp`, `.gif`）放入该文件夹中。
+    *   *例如: `./photos/my-memory.jpg`*
+3.  **取消注释**: 打开 `components/Decorations.tsx` 文件，取消文件顶部 `import.meta.glob` 相关代码的注释。
+4.  **重启**: 通常 Vite 会自动检测到新文件。如果没有生效，请重启开发服务器。
+5.  **完成**: 圣诞树会自动读取该文件夹中的所有照片，并为每一张照片生成一个拍立得挂件。
 
 ### 🛠 技术栈
 *   **核心框架**: [React 18](https://react.dev/)
@@ -121,7 +141,7 @@ Ensure your hand is visible to the camera.
 *   **✊ 握紧拳头**: **聚合 (Assemble)**。所有元素瞬间聚合成完美的圣诞树。
 *   **👌 捏合手指 (拇指与食指)**: **选中并放大**。
     *   移动手势光标悬停在照片上。
-    *   捏住手指，照片会飞到屏幕**上方居中**位置，并自动校正角度面向您。
+    *   捏住手指，照片会飞到屏幕**正中央**位置，并自动校正角度面向您。
     *   松开手指，照片飞回树上。
 *   **✋ 手部悬停**: 只要检测到手出现在画面中，圣诞树会自动**停止自转**，方便您仔细观察细节。
 

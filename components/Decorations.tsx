@@ -5,6 +5,14 @@ import * as THREE from 'three';
 import { useStore } from '../store';
 import { TreeMode, TREE_CONFIG } from '../types';
 
+// --- LOCAL PHOTOS LOADER ---
+// NOTE: In a real local Vite project, you can uncomment the lines below to load photos from a 'photos' folder.
+// In this preview environment, we must use placeholder images because import.meta.glob is a build-time feature.
+
+// const localPhotosImports = (import.meta as any).glob('../photos/*.{jpg,jpeg,png,webp,gif}', { eager: true });
+// const localPhotoUrls = Object.values(localPhotosImports).map((mod: any) => mod.default);
+const localPhotoUrls: string[] = []; 
+
 const Star = () => {
   const ref = useRef<THREE.Mesh>(null);
   const { mode, animationSpeed } = useStore();
@@ -58,6 +66,7 @@ const Star = () => {
 
 const Polaroid = React.forwardRef<THREE.Group, { position: [number, number, number]; url: string, index: number, isHovered: boolean, isLocked: boolean }>(({ position, url, index, isHovered, isLocked }, ref) => {
   const { mode, animationSpeed, isHandDetected } = useStore();
+  const { viewport } = useThree(); // Get viewport info for responsive positioning
   const internalRef = useRef<THREE.Group>(null);
   React.useImperativeHandle(ref, () => internalRef.current!);
 
@@ -70,16 +79,36 @@ const Polaroid = React.forwardRef<THREE.Group, { position: [number, number, numb
      if (!internalRef.current) return;
      
      if (isLocked) {
-         // --- ZOOM TO TOP CENTER ---
-         // Fixed relative to camera: Center X (0), Top Y (2.1), Front Z (-6)
-         const targetPos = new THREE.Vector3(0, 2.1, -6);
+         // --- ZOOM TO POSITION (EDIT HERE) ---
+         // 计算摄像机前方的视野尺寸
+         const depth = 6; // 距离摄像机的深度
+         const fovRad = (50 * Math.PI) / 180;
+         const viewHeightAtDepth = 2 * depth * Math.tan(fovRad / 2);
+         const viewWidthAtDepth = viewHeightAtDepth * (viewport.width / viewport.height);
+
+         // =================================================================================
+         // 🛠️ 在这里修改放大后的位置 / MODIFY POSITION HERE
+         // =================================================================================
+         
+         // 1. 设置 X (水平位置)
+         // -viewWidthAtDepth / 2 是屏幕最左边。
+         // + 3.0 是向右偏移量。增加这个数字，图片向右移。减少这个数字，图片向左移。
+         const targetX = -viewWidthAtDepth / 2 + 3.0; 
+
+         // 2. 设置 Y (垂直位置)
+         // viewHeightAtDepth / 2 是屏幕最顶端。
+         // - 2.5 是向下偏移量。增加这个负数（例如 -3.0），图片向下移。减少这个负数（例如 -1.0），图片向上移。
+         const targetY = viewHeightAtDepth;
+
+         // =================================================================================
+
+         const targetPos = new THREE.Vector3(targetX, targetY, -depth);
          targetPos.applyMatrix4(state.camera.matrixWorld);
 
-         internalRef.current.position.lerp(targetPos, delta * 10); 
-         internalRef.current.scale.lerp(new THREE.Vector3(2.5, 2.5, 2.5), delta * 10);
+         internalRef.current.position.lerp(targetPos, delta * 8); 
+         internalRef.current.scale.lerp(new THREE.Vector3(2.2, 2.2, 2.2), delta * 8);
 
          // --- BILLBOARD ROTATION (NO TILT) ---
-         // Align with camera orientation, then spin 180 to face it
          dummy.quaternion.copy(state.camera.quaternion);
          dummy.rotateY(Math.PI);
          internalRef.current.quaternion.slerp(dummy.quaternion, delta * 15);
@@ -138,12 +167,25 @@ export const Gallery = () => {
 
     const photos = useMemo(() => {
         const temp = [];
-        const count = 12;
+        // If local photos exist, use their count, otherwise default to 12
+        const hasLocalPhotos = localPhotoUrls.length > 0;
+        const count = hasLocalPhotos ? localPhotoUrls.length : 12;
+
         for(let i=0; i<count; i++) {
+            // Spiral distribution logic
             const y = (i / count) * (TREE_CONFIG.height * 0.7) - (TREE_CONFIG.height * 0.3);
             const r = ((1 - (y + TREE_CONFIG.height/2)/TREE_CONFIG.height) * TREE_CONFIG.radius) + 0.5;
             const angle = i * (Math.PI / 1.5);
-            temp.push({ position: [Math.cos(angle)*r, y, Math.sin(angle)*r] as [number,number,number], url: `https://picsum.photos/seed/${i + 123}/300/300`, id: i });
+            
+            const url = hasLocalPhotos 
+                ? localPhotoUrls[i] 
+                : `https://picsum.photos/seed/${i + 123}/300/300`;
+
+            temp.push({ 
+                position: [Math.cos(angle)*r, y, Math.sin(angle)*r] as [number,number,number], 
+                url: url, 
+                id: i 
+            });
         }
         return temp;
     }, []);
