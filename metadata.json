@@ -1,0 +1,7 @@
+{
+  "name": "Holographic AI Christmas Tree",
+  "description": "A 3D interactive Christmas tree composed of 45,000+ particles, controlled by AI hand gestures using the camera.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
